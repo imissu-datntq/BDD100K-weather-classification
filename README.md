@@ -3,10 +3,10 @@
 Bài tập lớn giữa kỳ môn Deep Learning - Khoa Toán Kinh tế, Đại học Kinh tế Quốc dân.
 
 Thành viên nhóm:
-- ...
-- ...
-- ...
-- ...
+- Nguyễn Trần Quốc Đạt
+- Bùi Huỳnh Gia Huy
+- Trương Đức Anh
+- Ninh Duy Tuân
 
 ## Bài toán
 
