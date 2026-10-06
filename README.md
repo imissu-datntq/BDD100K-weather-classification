@@ -49,7 +49,7 @@ Bộ test của BDD100K không có nhãn nên nhóm chia lại như sau:
 
 ## Cài đặt và tải dữ liệu
 
-Dùng Python 3.11. Tạo môi trường và cài thư viện:
+Dùng Python 3.12 (3.11 cũng được). Tạo môi trường và cài thư viện:
 
 ```bash
 python -m venv .venv
@@ -57,7 +57,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-`requirements.txt` cài torch bản CUDA 12.4. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm.
+Code viết bằng Keras 3, chạy trên backend PyTorch để train được bằng GPU trên Windows (TensorFlow bản mới không còn hỗ trợ GPU trên Windows). `requirements.txt` cài torch bản CUDA 12.6. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm.
 
 ### Tạo API token Kaggle
 
@@ -110,7 +110,46 @@ kaggle datasets download solesensei/solesensei_bdd100k -p data/raw --unzip
 ## Cấu trúc thư mục
 
 ```
-docs/        yêu cầu đề bài và mẫu báo cáo
+docs/                     yêu cầu đề bài, mẫu báo cáo, code mẫu
+scripts/
+  prepare_data.py         gộp nhãn 6 lớp, chia train/val/test, resize ảnh về 224x224
+  utils.py                hàm dùng chung: đọc dữ liệu, augmentation, train, đánh giá, vẽ hình
+  simple_cnn.py           mô hình 1: CNN đơn giản
+  complex_cnn.py          mô hình 2: CNN xây từ các block (conv + BatchNorm + shortcut)
+  transfer.py             mô hình 3: fine-tune ResNet50 (ImageNet)
+  compare.py              bảng so sánh kết quả 3 mô hình
+data/                     dữ liệu (không đưa lên git)
+results/                  checkpoint, metrics, hình vẽ (không đưa lên git)
 ```
 
-(sẽ cập nhật thêm khi có code)
+## Cách chạy
+
+Chạy từ thư mục gốc của repo, trong môi trường `.venv` đã kích hoạt:
+
+```bash
+python scripts/prepare_data.py
+```
+
+Chạy 1 lần sau khi tải dữ liệu. Script đọc nhãn trong `data/raw/`, ghi `data/train.csv`, `data/val.csv`, `data/test.csv` và ảnh đã resize vào `data/images/` (khoảng 15 phút).
+
+```bash
+python scripts/simple_cnn.py
+```
+
+```bash
+python scripts/complex_cnn.py
+```
+
+```bash
+python scripts/transfer.py
+```
+
+Mỗi mô hình lưu checkpoint tốt nhất (theo F1 macro trên val) và kết quả trên tập test vào `results/`: `<tên>_metrics.json`, `<tên>_history.png` (loss, accuracy theo epoch), `<tên>_cm.png` (confusion matrix).
+
+```bash
+python scripts/compare.py
+```
+
+In bảng so sánh 3 mô hình và lưu `results/compare.csv`.
+
+Batch size đang đặt cho GPU: `simple_cnn` batch 64 chạy được trên GPU 4GB. `complex_cnn` (batch 32) và `transfer` (batch 64) cần GPU khoảng 12GB như RTX 3060. Nếu báo `CUDA out of memory` thì giảm `BATCH_SIZE` ở đầu file.
