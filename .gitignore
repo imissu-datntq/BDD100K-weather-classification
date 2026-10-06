@@ -1,0 +1,18 @@
+# du lieu va ket qua train, chi giu thu muc data/raw rong
+data/*
+!data/raw/
+data/raw/*
+!data/raw/.gitkeep
+results/
+*.pth
+
+# moi truong python
+.venv/
+__pycache__/
+
+# notebook
+*.ipynb
+.ipynb_checkpoints/
+
+# file tam cua Word
+~$*

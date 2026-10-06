@@ -1,0 +1,15 @@
+# Cai dat: pip install -r requirements.txt
+# Ban torch ho tro CUDA 12.4 (RTX 3060), may khong co GPU van cai duoc nhung chay bang CPU
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+torch>=2.4
+torchvision>=0.19
+numpy
+pandas
+scikit-learn
+matplotlib
+pillow
+tqdm
+
+# tai du lieu tu Kaggle, ban >= 1.8.0 moi dung duoc API token kieu moi
+kaggle>=1.8.0

@@ -47,6 +47,29 @@ Bộ test của BDD100K không có nhãn nên nhóm chia lại như sau:
 5. Mô hình dùng transfer learning / fine-tuning
 6. Đánh giá trên tập test bằng accuracy, precision, recall, F1-score và confusion matrix
 
+## Cài đặt và tải dữ liệu
+
+Dùng Python 3.11. Tạo môi trường và cài thư viện:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+`requirements.txt` cài torch bản CUDA 12.4. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm.
+
+Để tải dữ liệu cần API token của Kaggle:
+
+1. Vào kaggle.com → Settings → API Tokens, nhập tên token rồi bấm Generate
+2. Lưu token vào file `~/.kaggle/access_token` (trên Windows là `C:\Users\<tên>\.kaggle\access_token`), hoặc đặt vào biến môi trường `KAGGLE_API_TOKEN`
+
+Sau đó tải và giải nén vào `data/raw/` (khoảng vài GB):
+
+```bash
+kaggle datasets download solesensei/solesensei_bdd100k -p data/raw --unzip
+```
+
 ## Cấu trúc thư mục
 
 ```
