@@ -59,12 +59,49 @@ pip install -r requirements.txt
 
 `requirements.txt` cài torch bản CUDA 12.4. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm.
 
-Để tải dữ liệu cần API token của Kaggle:
+### Tạo API token Kaggle
 
-1. Vào kaggle.com → Settings → API Tokens, nhập tên token rồi bấm Generate
-2. Lưu token vào file `~/.kaggle/access_token` (trên Windows là `C:\Users\<tên>\.kaggle\access_token`), hoặc đặt vào biến môi trường `KAGGLE_API_TOKEN`
+Cần có tài khoản Kaggle và `kaggle>=1.8.0` (đã có trong `requirements.txt`).
 
-Sau đó tải và giải nén vào `data/raw/` (khoảng vài GB):
+1. Đăng nhập kaggle.com, vào **Settings → API Tokens** (https://www.kaggle.com/settings/api)
+2. Ở mục **API Tokens (Recommended)**, nhập tên token bất kỳ (ví dụ `bdd100k`) rồi bấm **Generate**
+3. Copy chuỗi token ngay, vì có thể Kaggle chỉ hiện token một lần
+
+Không bấm phần **Legacy API Credentials** ở dưới, vì nó sẽ huỷ các key `kaggle.json` cũ.
+
+### Lưu token
+
+Token được lưu trong file `~/.kaggle/access_token` (trên Windows là `C:\Users\<tên>\.kaggle\access_token`). Trên Windows chạy 2 lệnh PowerShell sau, thay `<token>` bằng chuỗi vừa copy:
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.kaggle"
+```
+
+```powershell
+Set-Content -Path "$env:USERPROFILE\.kaggle\access_token" -Value "<token>" -NoNewline -Encoding ascii
+```
+
+Lệnh đầu tạo thư mục `.kaggle`, lệnh sau ghi token vào file. Phải có `-Encoding ascii` vì PowerShell 5.1 mặc định ghi UTF-8 có BOM, làm Kaggle đọc sai token.
+
+Trên Linux/macOS:
+
+```bash
+mkdir -p ~/.kaggle
+echo -n "<token>" > ~/.kaggle/access_token
+chmod 600 ~/.kaggle/access_token
+```
+
+Cách khác là đặt biến môi trường `KAGGLE_API_TOKEN` thay cho file. Trên Windows chạy lệnh sau rồi mở terminal mới:
+
+```powershell
+setx KAGGLE_API_TOKEN "<token>"
+```
+
+Token là key cá nhân, không commit và không chia sẻ. Mỗi người tự tạo token của mình.
+
+### Tải dữ liệu
+
+Kiểm tra token bằng `kaggle datasets list -s bdd100k`. Nếu in ra danh sách dataset là được. Sau đó tải và giải nén vào `data/raw/` (khoảng vài GB):
 
 ```bash
 kaggle datasets download solesensei/solesensei_bdd100k -p data/raw --unzip
