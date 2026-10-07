@@ -57,7 +57,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Code viết bằng Keras 3, chạy trên backend PyTorch để train được bằng GPU trên Windows (TensorFlow bản mới không còn hỗ trợ GPU trên Windows). `requirements.txt` cài torch bản CUDA 12.6. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm.
+Code viết bằng Keras 3, chạy trên backend PyTorch để train được bằng GPU trên Windows (TensorFlow bản mới không còn hỗ trợ GPU trên Windows). `requirements.txt` cài torch bản CUDA 12.6. Máy không có GPU NVIDIA vẫn cài được nhưng sẽ train bằng CPU, rất chậm. Cần driver NVIDIA bản 560 trở lên (hỗ trợ CUDA 12.6), kiểm tra bằng `nvidia-smi`.
 
 ### Tạo API token Kaggle
 
@@ -145,6 +145,8 @@ python scripts/transfer.py
 ```
 
 Mỗi mô hình lưu checkpoint tốt nhất (theo F1 macro trên val) và kết quả trên tập test vào `results/`: `<tên>_metrics.json`, `<tên>_history.png` (loss, accuracy theo epoch), `<tên>_cm.png` (confusion matrix).
+
+Lần đầu chạy `transfer.py` sẽ tự tải trọng số ResNet50 ImageNet (khoảng 100MB) nên cần có mạng.
 
 ```bash
 python scripts/compare.py

@@ -1,8 +1,11 @@
 # Gom kết quả của 3 mô hình thành bảng so sánh (mục IV của báo cáo)
 # Chạy sau khi đã train xong: python scripts/compare.py
 import os
+import sys
 import json
 import pandas as pd
+
+sys.stdout.reconfigure(encoding="utf-8")  # để in được tiếng Việt khi ghi output ra file trên Windows
 
 RESULT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
 MODELS = [
@@ -28,6 +31,10 @@ for name, label in MODELS:
         "Số tham số": f"{m['n_params']:,}",
         "Thời gian train (phút)": round(m["train_time_min"], 1),
     })
+
+if not rows:
+    print("chua co ket qua nao, hay train cac mo hinh truoc")
+    raise SystemExit
 
 df = pd.DataFrame(rows)
 print(df.to_string(index=False))
