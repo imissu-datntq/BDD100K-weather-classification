@@ -1,5 +1,5 @@
 # Chuẩn bị dữ liệu: gộp nhãn thành 6 lớp, chia train/val/test, resize ảnh về 224x224
-# Chạy 1 lần: python scripts/prepare_data.py
+# Chạy 1 lần: python scripts/01_prepare_data.py
 import os
 import json
 import pandas as pd

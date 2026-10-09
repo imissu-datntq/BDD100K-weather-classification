@@ -1,12 +1,15 @@
 # Thí nghiệm so sánh: mô hình 1 (CNN đơn giản) nhưng không dùng augmentation
-# Giữ nguyên kiến trúc, seed, số epoch, learning rate như simple_cnn.py, chỉ bỏ lớp augmentation
-# Chạy: python scripts/simple_cnn_noaug.py
+# Giữ nguyên kiến trúc, seed, số epoch, learning rate như 03a_simple_cnn.py, chỉ bỏ lớp augmentation
+# Chạy: python scripts/03b_simple_cnn_noaug.py
 
 # 1. Import thư viện
 import os
+import importlib
 import numpy as np
 from utils import IMG_SIZE, CLASSES, RESULT_DIR, set_seed, get_loaders, train_model, report
-from simple_cnn import build_model, EPOCHS, LR, PATIENCE
+# tên file bắt đầu bằng số nên không viết import thường được
+simple_cnn = importlib.import_module("03a_simple_cnn")
+build_model, EPOCHS, LR, PATIENCE = simple_cnn.build_model, simple_cnn.EPOCHS, simple_cnn.LR, simple_cnn.PATIENCE
 
 NAME = "simple_cnn_noaug"
 

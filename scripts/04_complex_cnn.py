@@ -1,5 +1,5 @@
 # Mô hình 2: CNN phức tạp hơn, xây từ các block CNN (2 conv + BatchNorm + shortcut)
-# Chạy: python scripts/complex_cnn.py
+# Chạy: python scripts/04_complex_cnn.py
 
 # 1. Import thư viện
 import os

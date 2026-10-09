@@ -1,5 +1,5 @@
 # Mô hình 3: transfer learning, fine-tune ResNet50 đã train trên ImageNet
-# Chạy: python scripts/transfer.py
+# Chạy: python scripts/05_transfer.py
 
 # 1. Import thư viện
 import os

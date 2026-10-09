@@ -1,8 +1,9 @@
 # Thống kê dữ liệu cho mục II của báo cáo: số ảnh mỗi lớp, phân bố nhãn gốc, ảnh mẫu của từng lớp
-# Chạy sau prepare_data.py: python scripts/explore_data.py
+# Chạy sau 01_prepare_data.py: python scripts/02_explore_data.py
 
 # 1. Import thư viện
 import os
+import importlib
 import sys
 import numpy as np
 import pandas as pd
@@ -10,9 +11,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from PIL import Image
-from prepare_data import ROOT, IMG_ROOT, CLASSES
+# tên file bắt đầu bằng số nên không viết import thường được
+prepare_data = importlib.import_module("01_prepare_data")
+ROOT, IMG_ROOT, CLASSES = prepare_data.ROOT, prepare_data.IMG_ROOT, prepare_data.CLASSES
 
-sys.stdout.reconfigure(encoding="utf-8")
 
 DATA_DIR = os.path.join(ROOT, "data")
 RESULT_DIR = os.path.join(ROOT, "results")

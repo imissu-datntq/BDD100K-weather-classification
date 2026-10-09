@@ -111,13 +111,16 @@ kaggle datasets download solesensei/solesensei_bdd100k -p data/raw --unzip
 
 ```
 docs/                     yêu cầu đề bài, mẫu báo cáo, code mẫu
-scripts/
-  prepare_data.py         gộp nhãn 6 lớp, chia train/val/test, resize ảnh về 224x224
+scripts/                  đánh số theo thứ tự chạy
+  01_prepare_data.py      gộp nhãn 6 lớp, chia train/val/test, resize ảnh về 224x224
+  02_explore_data.py      thống kê dữ liệu: số ảnh mỗi lớp, phân bố nhãn gốc, ảnh mẫu
+  03a_simple_cnn.py       mô hình 1: CNN đơn giản
+  03b_simple_cnn_noaug.py mô hình 1 nhưng không dùng augmentation (thí nghiệm so sánh)
+  04_complex_cnn.py       mô hình 2: CNN xây từ các block (conv + BatchNorm + shortcut)
+  05_transfer.py          mô hình 3: fine-tune ResNet50 (ImageNet)
+  06_evaluate.py          đánh giá chi tiết từng lớp trên tập test
+  07_compare.py           bảng so sánh kết quả các mô hình
   utils.py                hàm dùng chung: đọc dữ liệu, augmentation, train, đánh giá, vẽ hình
-  simple_cnn.py           mô hình 1: CNN đơn giản
-  complex_cnn.py          mô hình 2: CNN xây từ các block (conv + BatchNorm + shortcut)
-  transfer.py             mô hình 3: fine-tune ResNet50 (ImageNet)
-  compare.py              bảng so sánh kết quả 3 mô hình
 data/                     dữ liệu (không đưa lên git)
 results/                  checkpoint, metrics, hình vẽ (không đưa lên git)
 ```
@@ -127,29 +130,45 @@ results/                  checkpoint, metrics, hình vẽ (không đưa lên git
 Chạy từ thư mục gốc của repo, trong môi trường `.venv` đã kích hoạt:
 
 ```bash
-python scripts/prepare_data.py
+python scripts/01_prepare_data.py
 ```
 
 Chạy 1 lần sau khi tải dữ liệu. Script đọc nhãn trong `data/raw/`, ghi `data/train.csv`, `data/val.csv`, `data/test.csv` và ảnh đã resize vào `data/images/` (khoảng 15 phút).
 
 ```bash
-python scripts/simple_cnn.py
+python scripts/02_explore_data.py
+```
+
+Thống kê số ảnh mỗi lớp, phân bố nhãn gốc và ảnh mẫu, lưu vào `results/`.
+
+```bash
+python scripts/03a_simple_cnn.py
 ```
 
 ```bash
-python scripts/complex_cnn.py
+python scripts/03b_simple_cnn_noaug.py
 ```
 
 ```bash
-python scripts/transfer.py
+python scripts/04_complex_cnn.py
+```
+
+```bash
+python scripts/05_transfer.py
 ```
 
 Mỗi mô hình lưu checkpoint tốt nhất (theo F1 macro trên val) và kết quả trên tập test vào `results/`: `<tên>_metrics.json`, `<tên>_history.png` (loss, accuracy theo epoch), `<tên>_cm.png` (confusion matrix).
 
-Lần đầu chạy `transfer.py` sẽ tự tải trọng số ResNet50 ImageNet (khoảng 100MB) nên cần có mạng.
+Lần đầu chạy `05_transfer.py` sẽ tự tải trọng số ResNet50 ImageNet (khoảng 100MB) nên cần có mạng.
 
 ```bash
-python scripts/compare.py
+python scripts/06_evaluate.py
+```
+
+Đánh giá lại từng mô hình đã train trên tập test: precision, recall, F1 từng lớp, confusion matrix chuẩn hóa và ảnh bị đoán sai.
+
+```bash
+python scripts/07_compare.py
 ```
 
 In bảng so sánh 3 mô hình và lưu `results/compare.csv`.

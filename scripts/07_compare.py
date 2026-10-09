@@ -1,5 +1,5 @@
 # Gom kết quả của 3 mô hình thành bảng so sánh (mục IV của báo cáo)
-# Chạy sau khi đã train xong: python scripts/compare.py
+# Chạy sau khi đã train xong: python scripts/07_compare.py
 import os
 import sys
 import json

@@ -1,5 +1,5 @@
 # Đánh giá lại các mô hình đã train trên tập test, chi tiết theo từng lớp (mục IV của báo cáo)
-# Chạy sau khi đã train: python scripts/evaluate.py
+# Chạy sau khi đã train: python scripts/06_evaluate.py
 # Mỗi mô hình lưu vào results/:
 #   <tên>_per_class.csv  precision, recall, F1 từng lớp
 #   <tên>_pred.csv       nhãn thật và nhãn dự đoán của từng ảnh test, kèm nhãn gốc timeofday, weather
@@ -8,15 +8,17 @@
 
 # 1. Import thư viện
 import os
+import importlib
 import numpy as np
 import pandas as pd
 from utils import CLASSES, DATA_DIR, RESULT_DIR, SEED, BDDDataset, evaluate
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
-import simple_cnn
-import complex_cnn
-import transfer
+# tên file bắt đầu bằng số nên không viết import thường được
+simple_cnn = importlib.import_module("03a_simple_cnn")
+complex_cnn = importlib.import_module("04_complex_cnn")
+transfer = importlib.import_module("05_transfer")
 
 BATCH_SIZE = 32
 N_ERRORS = 12  # số ảnh đoán sai đưa vào hình

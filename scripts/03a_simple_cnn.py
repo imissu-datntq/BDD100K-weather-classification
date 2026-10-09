@@ -1,5 +1,5 @@
 # Mô hình 1: CNN đơn giản (conv, pooling, fully connected), không BatchNorm, không block
-# Chạy: python scripts/simple_cnn.py
+# Chạy: python scripts/03a_simple_cnn.py
 
 # 1. Import thư viện
 import os
@@ -15,7 +15,7 @@ PATIENCE = 5
 
 
 def build_model(augment=True, name=NAME):
-    # augment=False dùng cho thí nghiệm so sánh không augmentation (simple_cnn_noaug.py)
+    # augment=False dùng cho thí nghiệm so sánh không augmentation (03b_simple_cnn_noaug.py)
     model = Sequential(name=name)
     model.add(Input(shape=(IMG_SIZE, IMG_SIZE, 3)))
     if augment:
