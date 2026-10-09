@@ -152,4 +152,4 @@ python scripts/compare.py
 
 In bảng so sánh 3 mô hình và lưu `results/compare.csv`.
 
-Batch size đang đặt cho GPU: `simple_cnn` batch 64 chạy được trên GPU 4GB. `complex_cnn` (batch 32) và `transfer` (batch 64) cần GPU khoảng 12GB như RTX 3060. Nếu báo `CUDA out of memory` thì giảm `BATCH_SIZE` ở đầu file.
+Batch size đang đặt cho GPU: `simple_cnn` (batch 64) và `complex_cnn` (batch 32) chạy được trên GPU 4GB. `transfer` (batch 32) cần GPU khoảng 12GB như RTX 3060. Nếu báo `CUDA out of memory` thì giảm `BATCH_SIZE` ở đầu file.

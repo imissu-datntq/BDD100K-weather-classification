@@ -10,9 +10,9 @@ from keras.layers import Input, Conv2D, BatchNormalization, Activation, Add, Max
 from keras.layers import GlobalAveragePooling2D, Dense, Dropout
 
 NAME = "complex_cnn"
-BATCH_SIZE = 32  # train trên RTX 3060 12GB (~10GB VRAM), batch 64 bị tràn VRAM vì 2 block đầu chạy ở độ phân giải 224 và 112
+BATCH_SIZE = 32
 EPOCHS = 25
-LR = 1e-3
+LR = 3e-4  # lr 1e-3 làm F1 trên val dao động mạnh giữa các epoch (BatchNorm) và bị early stop sớm
 WEIGHT_DECAY = 1e-4
 PATIENCE = 5
 
@@ -37,12 +37,14 @@ def build_model():
     inputs = Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = get_augmentation()(inputs)
 
-    # stem: conv 3x3 (3 -> 32)
-    x = Conv2D(32, (3, 3), padding="same")(x)
+    # stem: conv 3x3 stride 2 (3 -> 32), giảm ảnh 224 -> 112 ngay từ đầu
+    # thời tiết, thời điểm là đặc trưng toàn ảnh (độ sáng, màu trời, sương) nên không cần conv ở độ phân giải đầy đủ,
+    # giảm khoảng 4 lần tính toán và VRAM so với để block đầu chạy ở 224
+    x = Conv2D(32, (3, 3), strides=2, padding="same")(x)
     x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
-    # 4 block: 32 -> 64 -> 128 -> 256 -> 512, ảnh 224 -> 14x14x512
+    # 4 block: 32 -> 64 -> 128 -> 256 -> 512, ảnh 112 -> 7x7x512
     for i, out_ch in enumerate([64, 128, 256, 512]):
         x = conv_block(x, out_ch, name=f"block{i + 1}_out")
 
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     # 3. Build model
     model = build_model()
     assert model(np.random.randn(2, IMG_SIZE, IMG_SIZE, 3).astype("float32")).shape == (2, len(CLASSES))
-    assert model.get_layer("block4_out").output.shape[1:] == (14, 14, 512)
+    assert model.get_layer("block4_out").output.shape[1:] == (7, 7, 512)
     model.summary()
 
     # 4. Train, lưu checkpoint có F1 trên val cao nhất

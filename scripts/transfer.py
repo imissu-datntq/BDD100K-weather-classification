@@ -12,7 +12,7 @@ from keras.applications import ResNet50
 from keras.applications.resnet50 import preprocess_input
 
 NAME = "resnet50"
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 EPOCHS_1, LR_1, PATIENCE_1 = 3, 1e-3, 3  # giai đoạn 1: chỉ train lớp cuối
 EPOCHS_2, LR_2, PATIENCE_2 = 10, 1e-4, 3  # giai đoạn 2: fine-tune toàn bộ
 WEIGHT_DECAY = 1e-4
