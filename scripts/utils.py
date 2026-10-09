@@ -5,6 +5,7 @@
 import os
 os.environ["KERAS_BACKEND"] = "torch"
 
+import gc
 import json
 import time
 import math
@@ -101,8 +102,22 @@ def macro_f1(y_true, y_pred):
     return f1_score(y_true, y_pred, average="macro", zero_division=0)
 
 
+class FreeMemory(keras.callbacks.Callback):
+    # torch.utils._pytree.tree_flatten (Keras gọi khi duyệt input/output của layer) tạo vòng tham chiếu
+    # giữ activation của mỗi batch trên GPU, gc tự động của Python có lúc dọn không kịp làm VRAM dồn lại và tràn
+    # ngẫu nhiên ở đầu epoch, nên dọn ngay sau mỗi batch
+    def on_train_begin(self, logs=None):
+        gc.freeze()  # bỏ qua các object có sẵn (model, thư viện) để mỗi lần gc.collect() chỉ tốn vài ms
+
+    def on_train_batch_end(self, batch, logs=None):
+        gc.collect()
+
+    def on_predict_batch_end(self, batch, logs=None):
+        gc.collect()
+
+
 def evaluate(model, ds):
-    probs = model.predict(ds, verbose=0)
+    probs = model.predict(ds, verbose=0, callbacks=[FreeMemory()])
     return ds.labels, probs.argmax(axis=1)
 
 
@@ -114,7 +129,7 @@ class ValF1(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         y_true = self.val_ds.labels
-        probs = self.model.predict(self.val_ds, verbose=0)
+        probs = self.model.predict(self.val_ds, verbose=0, callbacks=[FreeMemory()])
         y_pred = probs.argmax(axis=1)
         loss = -np.log(np.clip(probs[np.arange(len(y_true)), y_true], 1e-7, 1.0))
         logs["val_loss"] = float(np.mean(loss * self.val_ds.weights[y_true]))  # có trọng số lớp giống loss lúc train
@@ -131,6 +146,7 @@ def train_model(model, train_ds, val_ds, epochs, lr, name, weight_decay=0.0, pat
     model.compile(optimizer=opt, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
     callbacks = [
+        FreeMemory(),
         ValF1(val_ds),
         keras.callbacks.ReduceLROnPlateau(monitor="val_f1", mode="max", factor=0.5, patience=2, verbose=1),
         keras.callbacks.ModelCheckpoint(os.path.join(RESULT_DIR, name + "_best.weights.h5"), monitor="val_f1",
