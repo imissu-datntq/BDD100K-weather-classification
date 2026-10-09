@@ -14,10 +14,12 @@ LR = 1e-3
 PATIENCE = 5
 
 
-def build_model():
-    model = Sequential(name=NAME)
+def build_model(augment=True, name=NAME):
+    # augment=False dùng cho thí nghiệm so sánh không augmentation (simple_cnn_noaug.py)
+    model = Sequential(name=name)
     model.add(Input(shape=(IMG_SIZE, IMG_SIZE, 3)))
-    model.add(get_augmentation())
+    if augment:
+        model.add(get_augmentation())
 
     # 4 lần conv 3x3 -> relu -> maxpool, ảnh 224 -> 14x14x128
     model.add(Conv2D(32, (3, 3), padding="same", activation="relu"))

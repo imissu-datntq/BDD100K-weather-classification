@@ -9,6 +9,7 @@ sys.stdout.reconfigure(encoding="utf-8")  # để in được tiếng Việt khi
 
 RESULT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
 MODELS = [
+    ("simple_cnn_noaug", "CNN đơn giản (không augmentation)"),
     ("simple_cnn", "CNN đơn giản"),
     ("complex_cnn", "CNN phức tạp"),
     ("resnet50", "ResNet50 (transfer learning)"),
