@@ -113,12 +113,12 @@ kaggle datasets download solesensei/solesensei_bdd100k -p data/raw --unzip
 docs/                     yêu cầu đề bài, mẫu báo cáo, code mẫu
 scripts/                  đánh số theo thứ tự chạy
   01_prepare_data.py      gộp nhãn 6 lớp, chia train/val/test, resize ảnh về 224x224
-  02_explore_data.py      thống kê dữ liệu: số ảnh mỗi lớp, phân bố nhãn gốc, ảnh mẫu
+  02_explore_data.py      thống kê dữ liệu: số ảnh mỗi lớp, nhãn gốc, ảnh mẫu
   03a_simple_cnn.py       mô hình 1: CNN đơn giản
-  03b_simple_cnn_noaug.py mô hình 1 nhưng không dùng augmentation (thí nghiệm so sánh)
+  03b_simple_cnn_noaug.py mô hình 1 không augmentation, để so sánh tác dụng của augmentation
   04_complex_cnn.py       mô hình 2: CNN xây từ các block (conv + BatchNorm + shortcut)
   05_transfer.py          mô hình 3: fine-tune ResNet50 (ImageNet)
-  06_evaluate.py          đánh giá chi tiết từng lớp trên tập test
+  06_evaluate.py          đánh giá lại các mô hình trên tập test theo từng lớp, ảnh bị đoán sai
   07_compare.py           bảng so sánh kết quả các mô hình
   utils.py                hàm dùng chung: đọc dữ liệu, augmentation, train, đánh giá, vẽ hình
 data/                     dữ liệu (không đưa lên git)
@@ -139,7 +139,7 @@ Chạy 1 lần sau khi tải dữ liệu. Script đọc nhãn trong `data/raw/`,
 python scripts/02_explore_data.py
 ```
 
-Thống kê số ảnh mỗi lớp, phân bố nhãn gốc và ảnh mẫu, lưu vào `results/`.
+`02_explore_data.py` lưu `results/class_counts.csv`, `results/attribute_counts.csv`, `results/samples.png`.
 
 ```bash
 python scripts/03a_simple_cnn.py
@@ -161,16 +161,33 @@ Mỗi mô hình lưu checkpoint tốt nhất (theo F1 macro trên val) và kết
 
 Lần đầu chạy `05_transfer.py` sẽ tự tải trọng số ResNet50 ImageNet (khoảng 100MB) nên cần có mạng.
 
+Sau khi train xong:
+
 ```bash
 python scripts/06_evaluate.py
 ```
 
-Đánh giá lại từng mô hình đã train trên tập test: precision, recall, F1 từng lớp, confusion matrix chuẩn hóa và ảnh bị đoán sai.
+`06_evaluate.py` load checkpoint tốt nhất của từng mô hình, lưu `<tên>_per_class.csv` (precision, recall, F1 từng lớp), `<tên>_pred.csv` (dự đoán từng ảnh test), `<tên>_cm_norm.png` và `<tên>_errors.png`.
 
 ```bash
 python scripts/07_compare.py
 ```
 
-In bảng so sánh 3 mô hình và lưu `results/compare.csv`.
+In bảng so sánh các mô hình và lưu `results/compare.csv`.
 
 Batch size đang đặt cho GPU: `simple_cnn` (batch 64) và `complex_cnn` (batch 32) chạy được trên GPU 4GB. `transfer` (batch 32) cần GPU khoảng 12GB như RTX 3060. Nếu báo `CUDA out of memory` thì giảm `BATCH_SIZE` ở đầu file.
+
+## Kết quả
+
+Đánh giá trên tập test (8,841 ảnh), train trên RTX 3060. Precision, recall, F1 là macro trung bình 6 lớp, checkpoint chọn theo F1 macro trên val.
+
+| Model | Accuracy | Precision | Recall | F1-score | Số tham số | Thời gian train (phút) |
+|---|---|---|---|---|---|---|
+| CNN đơn giản (không augmentation) | 0.7559 | 0.5918 | 0.5953 | 0.5928 | 6,665,158 | 16.6 |
+| CNN đơn giản | 0.7768 | 0.6213 | 0.6517 | 0.6333 | 6,665,158 | 30.7 |
+| CNN phức tạp | 0.8098 | 0.6769 | 0.7177 | 0.6927 | 5,022,534 | 94.2 |
+| ResNet50 (transfer learning) | 0.8112 | 0.6924 | 0.6805 | 0.6817 | 23,600,006 | 80.6 |
+
+- Augmentation (lật ngang + zoom nhẹ) tăng F1 của CNN đơn giản thêm 4 điểm và giảm overfit rõ rệt.
+- CNN phức tạp có F1 macro cao nhất dù ít tham số hơn CNN đơn giản; ResNet50 có accuracy cao nhất và tốt nhất ở các lớp ban đêm.
+- Lớp khó nhất là các lớp ít ảnh: night_unclear và hai lớp dawn/dusk. Khoảng 27–39% ảnh dawn/dusk bị đoán thành ban ngày.
