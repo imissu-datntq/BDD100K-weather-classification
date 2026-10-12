@@ -23,6 +23,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # thư mục gốc của repo
 DATA_DIR = os.path.join(ROOT, "data")
 RESULT_DIR = os.path.join(ROOT, "results")
+MODEL_DIR = os.path.join(ROOT, "models")  # model đã train ghi ra file .keras, 08_predict.py load lại để dự đoán
 IMG_SIZE = 224
 BATCH_SIZE = 64
 SEED = 42

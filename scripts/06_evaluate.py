@@ -5,13 +5,14 @@
 #   <tên>_pred.csv       nhãn thật và nhãn dự đoán của từng ảnh test, kèm nhãn gốc timeofday, weather
 #   <tên>_cm_norm.png    confusion matrix chuẩn hóa theo hàng (tỉ lệ mỗi lớp thật bị đoán thành lớp nào)
 #   <tên>_errors.png     một số ảnh bị đoán sai
+# và ghi model ra models/<tên>.keras để dự đoán bằng 08_predict.py
 
 # 1. Import thư viện
 import os
 import importlib
 import numpy as np
 import pandas as pd
-from utils import CLASSES, DATA_DIR, RESULT_DIR, SEED, BDDDataset, evaluate
+from utils import CLASSES, DATA_DIR, RESULT_DIR, MODEL_DIR, SEED, BDDDataset, evaluate
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
@@ -62,6 +63,10 @@ if __name__ == "__main__":
         # 3. Build model và load checkpoint tốt nhất
         model = build()
         model.load_weights(weights)
+
+        # ghi cả model (kiến trúc + trọng số) ra models/<tên>.keras để 08_predict.py load lại, không cần train lại
+        os.makedirs(MODEL_DIR, exist_ok=True)
+        model.save(os.path.join(MODEL_DIR, name + ".keras"))
 
         # 4. Dự đoán trên tập test
         y_true, y_pred = evaluate(model, test_ds)

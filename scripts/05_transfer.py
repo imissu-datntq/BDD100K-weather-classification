@@ -5,6 +5,7 @@
 import os
 import numpy as np
 from utils import IMG_SIZE, CLASSES, RESULT_DIR, MEAN, STD, set_seed, get_loaders, get_augmentation, train_model, report
+import keras
 from keras import ops
 from keras.models import Model
 from keras.layers import Input, Lambda, GlobalAveragePooling2D, Dense, Dropout
@@ -18,6 +19,8 @@ EPOCHS_2, LR_2, PATIENCE_2 = 10, 1e-4, 3  # giai đoạn 2: fine-tune toàn bộ
 WEIGHT_DECAY = 1e-4
 
 
+# đăng ký để keras ghi được hàm này vào file .keras, lúc load chỉ cần import file này trước
+@keras.saving.register_keras_serializable()
 def to_caffe(t):
     # dữ liệu đang chuẩn hóa kiểu (x/255 - mean) / std
     # đổi lại về kiểu caffe (thang 0-255, BGR, trừ mean) mà ResNet50 của keras cần

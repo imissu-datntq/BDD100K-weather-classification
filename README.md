@@ -120,9 +120,11 @@ scripts/                  đánh số theo thứ tự chạy
   05_transfer.py          mô hình 3: fine-tune ResNet50 (ImageNet)
   06_evaluate.py          đánh giá lại các mô hình trên tập test theo từng lớp, ảnh bị đoán sai
   07_compare.py           bảng so sánh kết quả các mô hình
+  08_predict.py           load model đã ghi ra file và dự đoán, không cần train lại
   utils.py                hàm dùng chung: đọc dữ liệu, augmentation, train, đánh giá, vẽ hình
 data/                     dữ liệu (không đưa lên git)
 results/                  checkpoint, metrics, hình vẽ (không đưa lên git)
+models/                   model đã train ghi ra file .keras (không đưa lên git)
 ```
 
 ## Cách chạy
@@ -174,6 +176,20 @@ python scripts/07_compare.py
 ```
 
 In bảng so sánh các mô hình và lưu `results/compare.csv`.
+
+### Dự đoán bằng model đã lưu
+
+`06_evaluate.py` ghi mỗi model (kiến trúc + trọng số) ra `models/<tên>.keras` bằng `model.save`, tương đương `pickle.dump` trong code mẫu sklearn. `08_predict.py` load các file này bằng `keras.models.load_model` và dự đoán, không cần train lại:
+
+```bash
+python scripts/08_predict.py
+```
+
+In classification report trên tập test của từng mô hình và bảng tổng hợp accuracy, precision, recall, F1. Truyền thêm đường dẫn ảnh để dự đoán lớp của ảnh bất kỳ (ảnh được tự resize về 224x224):
+
+```bash
+python scripts/08_predict.py anh1.jpg anh2.jpg
+```
 
 Batch size đang đặt cho GPU: `simple_cnn` (batch 64) và `complex_cnn` (batch 32) chạy được trên GPU 4GB. `transfer` (batch 32) cần GPU khoảng 12GB như RTX 3060. Nếu báo `CUDA out of memory` thì giảm `BATCH_SIZE` ở đầu file.
 
