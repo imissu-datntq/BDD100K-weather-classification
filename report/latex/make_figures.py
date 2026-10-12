@@ -85,10 +85,13 @@ def confusion_matrices(path):
 
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
-    for f in ["simple_cnn.png", "conv_block.png", "complex_cnn.png", "resnet50_transfer.png"]:
+    for f in ["simple_cnn.png", "conv_block.png", "complex_cnn.png", "resnet50_transfer.png", "cnn_overview.png",
+              "convolution.png", "max_pooling.png", "residual_block.png", "pipeline.png", "class_distribution.png"]:
         shutil.copy(os.path.join(DIAGRAMS, f), os.path.join(OUT, f))
-    # the sample grid is a 3 MB PNG of photos, JPEG keeps the Overleaf upload small
+    # photo grids are large PNGs, JPEG keeps the Overleaf upload small
     Image.open(os.path.join(RES, "samples.png")).convert("RGB").save(os.path.join(OUT, "samples.jpg"), quality=88)
+    Image.open(os.path.join(RES, "complex_cnn_errors.png")).convert("RGB").save(os.path.join(OUT, "errors.jpg"),
+                                                                                quality=85)
     learning_curves(os.path.join(OUT, "learning_curves.png"))
     confusion_matrices(os.path.join(OUT, "confusion_matrices.png"))
     print("figures in", OUT, sorted(os.listdir(OUT)))
